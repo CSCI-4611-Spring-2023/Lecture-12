@@ -5,11 +5,17 @@
  */ 
 
 import * as gfx from 'gophergfx'
+import { GUI } from 'dat.gui'
 
 export class MeshViewer extends gfx.GfxApp
 {
     private cameraControls: gfx.OrbitControls;
     private cylinder: gfx.Mesh;
+
+    private wireframe: boolean;
+
+    private defaultMaterial: gfx.GouraudMaterial;
+    private wireframeMaterial: gfx.WireframeMaterial;
 
     constructor()
     {
@@ -17,6 +23,11 @@ export class MeshViewer extends gfx.GfxApp
 
         this.cameraControls = new gfx.OrbitControls(this.camera);
         this.cylinder = new gfx.Mesh();
+
+        this.defaultMaterial = new gfx.GouraudMaterial();
+        this.wireframeMaterial = new gfx.WireframeMaterial();
+
+        this.wireframe = false;
     }
 
     createScene(): void 
@@ -43,6 +54,19 @@ export class MeshViewer extends gfx.GfxApp
 
         this.createCylinderMesh(this.cylinder, 20, 3);
         this.scene.add(this.cylinder);
+
+        this.cylinder.material = this.defaultMaterial;
+
+        const gui = new GUI();
+        gui.width = 200;
+
+        const debugController = gui.add(this, 'wireframe');
+        debugController.name('Wireframe');
+
+        debugController.onChange(() => {
+            // ternary operator
+            this.cylinder.material = this.wireframe ? this.wireframeMaterial : this.defaultMaterial;
+        });
     }
 
     update(deltaTime: number): void 
