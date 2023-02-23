@@ -55,6 +55,7 @@ export class MeshViewer extends gfx.GfxApp
         this.createCylinderMesh(this.cylinder, 20, 3);
         this.scene.add(this.cylinder);
 
+        this.defaultMaterial.texture = new gfx.Texture('./campbells.png');
         this.cylinder.material = this.defaultMaterial;
 
         const gui = new GUI();
@@ -79,6 +80,7 @@ export class MeshViewer extends gfx.GfxApp
         const vertices: gfx.Vector3[] = [];
         const normals: gfx.Vector3[] = [];
         const indices: number[] = [];
+        const uvs: number[] = [];
 
         const angleIncrement = (Math.PI * 2) / numSegments;
 
@@ -95,18 +97,22 @@ export class MeshViewer extends gfx.GfxApp
             // Add the normals for each column
             normals.push(new gfx.Vector3(Math.cos(angle), 0, Math.sin(angle)));
             normals.push(new gfx.Vector3(Math.cos(angle), 0, Math.sin(angle)));
+
+            uvs.push(1 - i / numSegments, 0);
+            uvs.push(1 - i / numSegments, 1);
         }
 
         // Create the cylinder barrel triangles
-        for(let i=0; i < numSegments; i++)
+        for(let col=0; col < numSegments; col++)
         {
-            indices.push(i*2, i*2+2, i*2+1);
-            indices.push(i*2+1, i*2+2, i*2+3);
+            indices.push(col*2, col*2+2, col*2+1);
+            indices.push(col*2+1, col*2+2, col*2+3);
         }
 
         mesh.setVertices(vertices);
         mesh.setNormals(normals);
         mesh.setIndices(indices);
+        mesh.setTextureCoordinates(uvs);
         mesh.createDefaultVertexColors();
     }
 }
